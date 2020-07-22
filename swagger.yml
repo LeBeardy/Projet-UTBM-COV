@@ -1,0 +1,270 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger ReST Article
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# Paths supported by the server application
+paths:
+  /article:
+    get:
+      operationId: article.read_all
+      tags:
+        - Article
+      summary: Read the entire list of article
+      description: Read the list of article
+      parameters:
+        - name: length
+          in: query
+          type: integer
+          description: Number of article to get from article
+          required: false
+        - name: offset
+          in: query
+          type: integer
+          description: Offset from beginning of list where to start gathering article
+          required: false
+      responses:
+        200:
+          description: Successfully read article list operation
+          schema:
+            type: array
+            items:
+              properties:
+                id:
+                  type: integer
+                title:
+                  type: string
+                text:
+                  type: string
+                timestamp:
+                  type: string
+
+    post:
+      operationId: article.create
+      tags:
+        - Article
+      summary: Create a article and add it to the article list
+      description: Create a new article in the article list
+      parameters:
+        - name: article
+          in: body
+          description: Article to create
+          required: True
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+                description: First name of article to create
+              text:
+                type: string
+                description: Id of article to create
+      responses:
+        201:
+          description: Successfully created article in list
+
+  /article/{id}:
+    get:
+      operationId: article.read_one
+      tags:
+        - Article
+      summary: Read one article from the article list
+      description: Read one article from the article list
+      parameters:
+        - name: id
+          in: path
+          description: Id of the article to get from the list
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully read article from article list operation
+          schema:
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              text:
+                type: string
+              timestamp:
+                type: string
+
+    put:
+      operationId: article.update
+      tags:
+        - Article
+      summary: Update a article in the article list
+      description: Update a article in the article list
+      parameters:
+        - name: id
+          in: path
+          description: Id of the article to update in the list
+          type: integer
+          required: True
+        - name: article
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              text:
+                type: string
+      responses:
+        200:
+          description: Successfully updated article in article list
+
+    delete:
+      operationId: article.delete
+      tags:
+        - Article
+      summary: Delete a article from the article list
+      description: Delete a article
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a article from article list
+  /dla_article:
+    get:
+      operationId: dla_article.read_all
+      tags:
+        - Dla_article
+      summary: Read the entire list of dla_article
+      description: Read the list of dla_article
+      parameters:
+        - name: length
+          in: query
+          type: integer
+          description: Number of dla_article to get from dla_article
+          required: false
+        - name: offset
+          in: query
+          type: integer
+          description: Offset from beginning of list where to start gathering dla_article
+          required: false
+      responses:
+        200:
+          description: Successfully read dla_article list operation
+          schema:
+            type: array
+            items:
+              properties:
+                id:
+                  type: integer
+                title:
+                  type: string
+                text:
+                  type: string
+                timestamp:
+                  type: string
+
+    post:
+      operationId: dla_article.create
+      tags:
+        - Dla_article
+      summary: Create a dla_article and add it to the dla_article list
+      description: Create a new dla_article in the dla_article list
+      parameters:
+        - name: dla_article
+          in: body
+          description: Dla_article to create
+          required: True
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+                description: First name of dla_article to create
+              text:
+                type: string
+                description: Id of dla_article to create
+      responses:
+        201:
+          description: Successfully created dla_article in list
+
+  /dla_article/{id}:
+    get:
+      operationId: dla_article.read_one
+      tags:
+        - Dla_article
+      summary: Read one dla_article from the dla_article list
+      description: Read one dla_article from the dla_article list
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dla_article to get from the list
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully read dla_article from dla_article list operation
+          schema:
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              text:
+                type: string
+              timestamp:
+                type: string
+
+    put:
+      operationId: dla_article.update
+      tags:
+        - Dla_article
+      summary: Update a dla_article in the dla_article list
+      description: Update a dla_article in the dla_article list
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dla_article to update in the list
+          type: integer
+          required: True
+        - name: dla_article
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              text:
+                type: string
+      responses:
+        200:
+          description: Successfully updated dla_article in dla_article list
+
+    delete:
+      operationId: dla_article.delete
+      tags:
+        - Dla_article
+      summary: Delete a dla_article from the dla_article list
+      description: Delete a dla_article
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a dla_article from dla_article list
