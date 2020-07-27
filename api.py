@@ -1,7 +1,4 @@
-#flask
-#connexion
-#connexion[swagger-ui]
-#scrapy
+
 from flask import render_template
 import connexion
 

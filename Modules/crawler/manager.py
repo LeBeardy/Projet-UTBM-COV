@@ -6,7 +6,6 @@ from scrapy.crawler import CrawlerProcess
 class Manager:
 
   def __init__(self):
-    # Punctuations and stopwords
     self.version = "1.0"
 
 
