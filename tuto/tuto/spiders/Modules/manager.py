@@ -18,3 +18,12 @@ class Manager:
 
     def get_ids(self):
         return [id for id in self.cursor.execute('SELECT id FROM articleData')]
+
+    def get_article_by_id(self, id):
+        return str(self.cleaner.clean_text(self.cursor.execute('SELECT content FROM wikiData WHERE id=?', id)
+                    .fetchone()[0]))
+
+    def __iter__(self):
+        for id in self.get_ids():
+            article = self.get_article_by_id(id)
+            yield self.cleaner.clean_text(article).split()
