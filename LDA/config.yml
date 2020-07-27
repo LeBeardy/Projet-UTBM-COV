@@ -1,5 +1,0 @@
-paths:
-  database: "data/data.db"
-  lda: "data/lda_model"
-  dictionary: "data/dictionary"
-  corpus: "data/corpus"
