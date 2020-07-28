@@ -23,7 +23,17 @@ class Manager:
     def get_content_by_pmid(self, pmid):
         return str(self.cleaner.clean_text(self.cursor.execute('SELECT content FROM articleData WHERE pmid=?', pmid)
                     .fetchone()[0]))
+    def get_articles(self):
+        articles =[]
+        request = self.cursor.execute('SELECT * FROM articleData')
+        for article in request:
+            articles.append({"pmid": article[0], "title": article[1], "content": article[2], "authors": article[3]})
+        return articles
 
+    def get_article(self, pmid):
+        article = self.cursor.execute('SELECT * FROM articleData WHERE pmid=%i' % pmid).fetchone()
+
+        return {"pmid": article[0], "title": article[1], "content": article[2], "authors": article[3]}
 
     def __iter__(self):
         for pmid in self.get_pmids():

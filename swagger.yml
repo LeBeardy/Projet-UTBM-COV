@@ -37,13 +37,13 @@ paths:
             type: array
             items:
               properties:
-                id:
+                pmid:
                   type: integer
                 title:
                   type: string
                 text:
                   type: string
-                timestamp:
+                authors:
                   type: string
   /generate:
     post:
@@ -56,7 +56,7 @@ paths:
         200:
           description: Successfully fetched the articles
 
-  /article/{id}:
+  /article/{pmid}:
     get:
       operationId: article.read_one
       tags:
@@ -64,9 +64,9 @@ paths:
       summary: Read one article from the article list
       description: Read one article from the article list
       parameters:
-        - name: id
+        - name: pmid
           in: path
-          description: Id of the article to get from the list
+          description: Pmid of the article to get from the list
           type: integer
           required: True
       responses:
@@ -74,13 +74,13 @@ paths:
           description: Successfully read article from article list operation
           schema:
             properties:
-              id:
+              pmid:
                 type: integer
               title:
                 type: string
               text:
                 type: string
-              timestamp:
+              authors:
                 type: string
 
   /generateDLA:

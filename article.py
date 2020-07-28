@@ -5,7 +5,8 @@ ARTICLE collection
 
 from datetime import datetime
 from flask import make_response, abort
-from Modules.crawler.manager import Manager
+from Modules.data.manager import Manager
+from Modules.LDA.Evaluator import Evaluator
 from articleCrawler.articleCrawler.spiders.getpmids_spider import ArticlesSpider
 import crochet
 crochet.setup()
@@ -15,8 +16,8 @@ from scrapy import signals
 from scrapy.crawler import CrawlerRunner
 from scrapy.signalmanager import dispatcher
 import time
-
-
+import os
+import generateLDA
 output_data = []
 crawl_runner = CrawlerRunner()
 
@@ -26,28 +27,27 @@ def read_all():
     with the complete lists of article
     :return:        json string of list of article
     """
+    database_manager = Manager(os.getcwd() + "/data/database/data.db")
+
     # Create the list of article from our data
-    return [ARTICLE[key] for key in sorted(ARTICLE.keys())]
+    return jsonify(database_manager.get_articles())
 
 
-def read_one(id):
+def read_one(pmid):
     """
     This function responds to a request for /api/article/{id}
     with one matching article from article
     :param id:   id of article to find
     :return:        article matching last name
     """
-    # Does the article exist in article?
-    if id in ARTICLE:
-        article = ARTICLE.get(id)
 
-    # otherwise, nope, not found
-    else:
-        abort(
-            404, "Article with last name {id} not found".format(id=id)
-        )
-
-    return article
+    database_manager = Manager(os.getcwd() + "/data/database/data.db")
+    evaluator = Evaluator()
+    article = database_manager.get_article(pmid)
+    recommendations = evaluator.get_recommendations(article["content"])
+    article["recommendation"] = recommendations
+    # Create the list of article from our data
+    return jsonify(article)
 
 
 def generate():
@@ -57,7 +57,7 @@ def generate():
     :return:      201 on success
     """
     scrape_with_crochet()
-
+    generateLDA.generate()
     return jsonify(output_data)
 
 
