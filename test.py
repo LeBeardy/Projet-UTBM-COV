@@ -2,14 +2,14 @@ from Modules.crawler.manager import Manager
 from Modules.LDA.generateLDA import GenerateLDA
 from Modules.LDA.Evaluator import Evaluator
 
-#m = Manager()
+m = Manager()
 
-#m.launch_spider()
+m.launch_spider()
 
 #g = GenerateLDA()
 
 #g.generateLDA()
 
-e = Evaluator()
+#e = Evaluator()
 
-print(e.get_recommendations("expansion China"))
+#print(e.get_recommendations("expansion China"))

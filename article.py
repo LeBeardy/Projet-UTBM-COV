@@ -6,10 +6,19 @@ ARTICLE collection
 from datetime import datetime
 from flask import make_response, abort
 from Modules.crawler.manager import Manager
+from articleCrawler.articleCrawler.spiders.getpmids_spider import ArticlesSpider
+import crochet
+crochet.setup()
 
-def get_timestamp():
-    return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
+from flask import Flask , render_template, jsonify, request, redirect, url_for
+from scrapy import signals
+from scrapy.crawler import CrawlerRunner
+from scrapy.signalmanager import dispatcher
+import time
 
+
+output_data = []
+crawl_runner = CrawlerRunner()
 
 def read_all():
     """
@@ -40,13 +49,30 @@ def read_one(id):
 
     return article
 
+
 def generate():
     """
     This function responds to a request for /api/article/generate
         with the fetch of the articles
     :return:      201 on success
     """
-    # Create the list of article from our data
-    manager = Manager()
-    manager.launch_spider()
-    return make_response( "LDA model successfully created", 201)
+    scrape_with_crochet()
+
+    return jsonify(output_data)
+
+
+@crochet.wait_for(timeout=60.0)
+def scrape_with_crochet():
+    # signal fires when single item is processed
+    # and calls _crawler_result to append that item
+    dispatcher.connect(_crawler_result, signal=signals.item_scraped)
+    eventual = crawl_runner.crawl( ArticlesSpider)
+    return eventual  # returns a twisted.internet.defer.Deferred
+
+
+def _crawler_result(item, response, spider):
+    """
+    We're using dict() to decode the items.
+    Ideally this should be done using a proper export pipeline.
+    """
+    output_data.append(dict(item))
