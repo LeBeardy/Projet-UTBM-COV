@@ -36,9 +36,9 @@ class ArticlesSpider(scrapy.Spider):
         pmids = []
 
         database_manager = Manager(project_folder + '/data/database/data.db')
-
+        ret = []
         for post in response.xpath('//channel/item'):
-            if today in post.xpath('pubDate//text()').extract_first():
+            #if today in post.xpath('pubDate//text()').extract_first():
                 pmids.append( post.xpath('link//text()').extract_first().split("/")[6])
 
         if pmids:
@@ -49,8 +49,9 @@ class ArticlesSpider(scrapy.Spider):
 
                 for item in resp:
                     database_manager.insert_articles_content( item["id"],item["passages"][0]["text"], item["passages"][1]["text"], dumps(item["authors"]))
-                    return AticleItem (pmid= item["id"],title=item["passages"][0]["text"],content= item["passages"][1]["text"],autohrs= dumps(item["authors"]))
+                    #re.append( AticleItem (pmid= item["id"],title=item["passages"][0]["text"],content= item["passages"][1]["text"],autohrs= dumps(item["authors"])))
                     print("article %s inseré" % item["id"])
             print ("Data successfully fetched", 201)
+            return ret
         else :
             print ("No data found on : \"https://www.ncbi.nlm.nih.gov/research/pubtator/index.html?view=docsum&query=$LitCovid\"", 404)

@@ -8,13 +8,13 @@ class Manager:
         self.conn = sqlite3.connect(db_file)
         cursor = self.conn.cursor()
         cursor.execute(
-            'CREATE TABLE IF NOT EXISTS articleData (pmid integer, title text, content text, author text )')
+            'CREATE TABLE IF NOT EXISTS articleData (pmid integer NOT NULL PRIMARY KEY, title text, content text, author text )')
         self.conn.commit()
         self.cursor = self.conn.cursor()
         self.cleaner = Cleaner()
 
     def insert_articles_content(self, pmid, title, content, authors):
-        self.cursor.execute('INSERT INTO articleData VALUES (?, ?, ?, ?)', (pmid, title, content,authors))
+        self.cursor.execute('REPLACE INTO articleData VALUES (?, ?, ?, ?)', (pmid, title, content,authors))
         self.conn.commit()
 
     def get_pmids(self):
