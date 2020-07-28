@@ -1,6 +1,6 @@
 import sqlite3
 from Modules.LDA.Cleaner import Cleaner
-
+from json import loads
 class Manager:
 
     def __init__(self, db_file):
@@ -33,9 +33,9 @@ class Manager:
     def get_article(self, pmid):
         article = self.cursor.execute('SELECT * FROM articleData WHERE pmid=%i' % pmid).fetchone()
 
-        return {"pmid": article[0], "title": article[1], "content": article[2], "authors": article[3]}
+        return {"pmid": article[0], "title": article[1], "content": article[2], "authors": loads(article[3])}
 
     def __iter__(self):
         for pmid in self.get_pmids():
-            article = self.get_content_by_pmid(pmid)
-            yield self.cleaner.clean_text(article).split()
+            content = self.get_content_by_pmid(pmid)
+            yield self.cleaner.clean_text(content).split()

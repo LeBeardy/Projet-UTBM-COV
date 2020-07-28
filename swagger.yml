@@ -81,7 +81,25 @@ paths:
               text:
                 type: string
               authors:
-                type: string
+                type: array
+                items:
+                  type: string
+              recommendations:
+                type: object
+                properties:
+                  top_words:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        place:
+                          type: integer
+                        word:
+                          type: string
+                  articles:
+                    type: array
+                    items:
+                      type: integer
 
   /generateDLA:
     post:
