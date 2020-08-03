@@ -23,33 +23,32 @@ def get_pmids( datepub, response):
 
     pmids = []
     for post in response.xpath('//channel/item'):
-        if datepub in post.xpath('pubDate//text()').extract_first():
-            pmids.append( post.xpath('link//text()').extract_first().split("/")[6])
+        pmids.append( post.xpath('link//text()').extract_first().split("/")[6])
 
     print("nombre de pmids recupere : %i" % len(pmids) )
     return pmids
 
-def create_url_topmcids(pmids):
+def create_url_to_pmcids(ids):
     print("-----------------------------------------------------")
-    print("generation des urls de recuperation des pmcids")
+    print("generation des urls de recuperation des ids correspondants")
     print("-----------------------------------------------------")
 
-    url_pmcids = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids="
+    url_ids = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids="
     convert_url = []
-    for groupe in grouper(pmids, 200):
+    for groupe in grouper(ids, 200):
         groupe = list(filter(None,list(groupe)))
         print("division en groupe de %i" % len(groupe))
         parameters=""
-        for pmid in groupe:
-            parameters = parameters + pmid +","
+        for id in groupe:
+            parameters = parameters + id +","
         parameters = parameters[:-1] + "&format=json"
-        convert_url.append(url_pmcids + parameters)
+        convert_url.append(url_ids + parameters)
 
     print( "%i appels a l'api gouv" % len(convert_url))
     return convert_url
 
 def get_pmcids( pmids):
-    convert_url = create_url_topmcids(pmids)
+    convert_url = create_url_to_pmcids(pmids)
 
     print("-----------------------------------------------------")
     print("Récuperation des pmcids depuis ncbi")
@@ -66,37 +65,66 @@ def get_pmcids( pmids):
             else :
                 pmids_abstract.append( elem["pmid"])
 
-    print("%i article complet | %i article abstract" % (len(pmcids), len(pmids_abstract)) )
-    return pmcids, pmids_abstract
+    print("%i article complet" % len(pmcids) )
+
+    return pmcids
 
 
-def get_articles( type, ids, url):
+def get_full_articles(  ids, url, database_manager):
     print("-----------------------------------------------------")
-    print("Récuperation des articles")
+    print("Récuperation des articles full")
     print("-----------------------------------------------------")
-    database_manager = Manager(os.getcwd() + '/data/database/data.db')
 
     for groupe  in grouper(ids, 1000):
         groupe = list(filter(None,list(groupe)))
         print("groupe de taille : %i" % len(groupe))
-        json = dumps({type: groupe})
+        json = {"pmcids": groupe}
         req = requests.post(url, json=json)
         print(req)
         resp = req.json(cls=ndjson.Decoder)
-        print(resp)
         print("%i articles recupere" % len(resp))
-        insertData( resp, database_manager)
+
+        pmcids_fetched = []
+        for article in resp:
+            pmcid= article["pmcid"]
+            pmid = article["pmid"]
+            pmcids_fetched.append(id)
+            title=article["passages"][0]["text"]
+            content=""
+            for cont in article["passages"]:
+                if cont["infons"]["section"] not in[ "References", "Conflicts of Interest"]:
+                    content= content + cont["text"] + "\n"
+            authors=dumps(article["authors"])
 
 
-def insertData( resp, database_manager):
-    print("\t-----------------------------------------------------")
-    print("\tInsertion des données")
-    print("\t-----------------------------------------------------")
+            print("\t-----------------------------------------------------")
+            print("\tInsertion des données")
+            print("\t-----------------------------------------------------")
+            database_manager.complete_article(pmid, pmcid, content )
 
-    for item in resp:
-        database_manager.insert_articles_content( item["id"],item["passages"][0]["text"], item["passages"][1]["text"], dumps(item["authors"]))
-        print("article %s inseré" % item["id"])
 
+
+
+def get_abstract_articles(ids, url, database_manager):
+    print("-----------------------------------------------------")
+    print("Récuperation des articles abstract")
+    print("-----------------------------------------------------")
+    for groupe  in grouper(ids, 1000):
+        groupe = list(filter(None,list(groupe)))
+        print("groupe de taille : %i" % len(groupe))
+        json = {"pmids": groupe}
+        req = requests.post(url, json=json)
+        print(req)
+        resp = req.json(cls=ndjson.Decoder)
+        print("%i articles recupere" % len(resp))
+
+        for article in resp:
+            id = article["id"]
+            title =  article["passages"][0]["text"]
+            content = article["passages"][1]["text"]
+            authors = dumps(article["authors"])
+            type = "a"
+            database_manager.insert_articles_content(id, title, content, authors)
 
 class AticleItem(scrapy.Item):
     pmid = scrapy.Field()
@@ -114,12 +142,13 @@ class ArticlesSpider(scrapy.Spider):
 
         print("fetch pour le jour : " + today)
 
-
+        database_manager = Manager(os.getcwd() + '/data/database/data.db')
         pmids = get_pmids(today,response)
 
         if pmids:
-            article, article_abstract = get_pmcids(pmids)
-            get_articles("pmcids", article, url)
+            get_abstract_articles(pmids, url, database_manager)
+            full_article = get_pmcids(pmids)
+            get_full_articles( full_article, url,database_manager)
             print ("Data successfully fetched", 201)
         else :
             print ("No data found on : \"https://www.ncbi.nlm.nih.gov/research/pubtator/index.html?view=docsum&query=$LitCovid\"", 404)

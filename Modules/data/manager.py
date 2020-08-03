@@ -8,13 +8,17 @@ class Manager:
         self.conn = sqlite3.connect(db_file)
         cursor = self.conn.cursor()
         cursor.execute(
-            'CREATE TABLE IF NOT EXISTS articleData (pmid integer NOT NULL PRIMARY KEY, title text, content text, author text )')
+            'CREATE TABLE IF NOT EXISTS articleData (pmid integer , pmcid text, title text, content_abstract text, content_full, author text)')
         self.conn.commit()
         self.cursor = self.conn.cursor()
         self.cleaner = Cleaner()
 
-    def insert_articles_content(self, pmid, title, content, authors):
-        self.cursor.execute('REPLACE INTO articleData VALUES (?, ?, ?, ?)', (pmid, title, content,authors))
+    def insert_articles_content(self, pmid, title, content_abstract, authors, pmcid = "", content_full=""):
+        self.cursor.execute('REPLACE INTO articleData VALUES (?, ?, ?, ?, ?, ?, ?)', (pmid, pmcid, title, content_abstract, content_full,authors))
+        self.conn.commit()
+
+    def complete_article(self, pmid, pmcid, content_full):
+        self.cursor.execute('UPDATE articleData SET pmcid=?, content_full=? WHERE pmid=?', (pmcid, content_full, pmid))
         self.conn.commit()
 
     def get_pmids(self):
@@ -27,13 +31,13 @@ class Manager:
         articles =[]
         request = self.cursor.execute('SELECT * FROM articleData')
         for article in request:
-            articles.append({"pmid": article[0], "title": article[1], "content": article[2], "authors": article[3]})
+            articles.append({"pmid": article[0], "title": article[1], "content": article[2], "authors": loads(article[3]), "type": article[4]})
         return articles
 
     def get_article(self, pmid):
         article = self.cursor.execute('SELECT * FROM articleData WHERE pmid=%i' % pmid).fetchone()
 
-        return {"pmid": article[0], "title": article[1], "content": article[2], "authors": loads(article[3])}
+        return {"pmid": article[0], "title": article[1], "content": article[2], "authors": loads(article[3]), "type": article[4]}
 
     def __iter__(self):
         for pmid in self.get_pmids():
