@@ -87,23 +87,13 @@ def get_full_articles(  ids, url, database_manager):
         print("groupe de taille : %i" % len(groupe))
         resp = send_request("pmcids",url, groupe)
 
-        pmcids_fetched = []
         for article in resp:
-            pmcid= article["pmcid"]
-            pmid = article["pmid"]
-            pmcids_fetched.append(id)
             title=article["passages"][0]["text"]
             content=""
             for cont in article["passages"]:
                 if cont["infons"]["section"] not in[ "References", "Conflicts of Interest"]:
                     content= content + cont["text"] + "\n"
-            authors=dumps(article["authors"])
-
-
-            print("\t-----------------------------------------------------")
-            print("\tInsertion des données")
-            print("\t-----------------------------------------------------")
-            database_manager.complete_article(pmid, pmcid, content )
+            database_manager.complete_article(article["pmid"], article["pmcid"], content )
 
 
 def get_abstract_articles(ids, url, database_manager):
@@ -121,7 +111,8 @@ def get_abstract_articles(ids, url, database_manager):
             infons = article["passages"][0]["infons"]
             date_pub = infons["journal"].split(";")[1].split(".")[0][:12] if "journal" in infons  else""
             journal_pub = infons["journal"].split(";")[0] if "journal" in infons  else""
-            database_manager.insert_article(article["id"], "", article["passages"][0]["text"], content, "", dumps(article["authors"]), date_pub, journal_pub)
+            database_manager.insert_article(article["id"], "", article["passages"][0]["text"], content, "", dumps(article["authors"]),
+            date_pub, journal_pub)
 
 
 class AticleItem(scrapy.Item):
