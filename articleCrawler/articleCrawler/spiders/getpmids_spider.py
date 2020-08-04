@@ -112,19 +112,21 @@ def get_abstract_articles(ids, url, database_manager):
     for groupe  in grouper(ids, 1000):
         groupe = list(filter(None,list(groupe)))
         print("groupe de taille : %i" % len(groupe))
-        json = {"pmids": groupe}
+        json =  {"pmids": groupe}
         req = requests.post(url, json=json)
         print(req)
         resp = req.json(cls=ndjson.Decoder)
         print("%i articles recupere" % len(resp))
 
         for article in resp:
-            id = article["id"]
+            pmid = article["id"]
             title =  article["passages"][0]["text"]
-            content = article["passages"][1]["text"]
+            content = article["passages"][1]["text"] if article["passages"][1]["text"] else ""
             authors = dumps(article["authors"])
-            type = "a"
-            database_manager.insert_articles_content(id, title, content, authors)
+            infons = article["passages"][0]["infons"]
+            date_pub = infons["journal"].split(";")[1].split(".")[0][:12] if "journal" in infons  else""
+            journal_pub = infons["journal"].split(";")[0] if "journal" in infons  else""
+            database_manager.insert_article(pmid, "", title, content, "", authors, date_pub, journal_pub)
 
 class AticleItem(scrapy.Item):
     pmid = scrapy.Field()
