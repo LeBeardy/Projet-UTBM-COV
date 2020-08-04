@@ -117,14 +117,12 @@ def get_abstract_articles(ids, url, database_manager):
         resp = send_request("pmids",url, groupe)
 
         for article in resp:
-            pmid = article["id"]
-            title =  article["passages"][0]["text"]
             content = article["passages"][1]["text"] if article["passages"][1]["text"] else ""
-            authors = dumps(article["authors"])
             infons = article["passages"][0]["infons"]
             date_pub = infons["journal"].split(";")[1].split(".")[0][:12] if "journal" in infons  else""
             journal_pub = infons["journal"].split(";")[0] if "journal" in infons  else""
-            database_manager.insert_article(pmid, "", title, content, "", authors, date_pub, journal_pub)
+            database_manager.insert_article(article["id"], "", article["passages"][0]["text"], content, "", dumps(article["authors"]), date_pub, journal_pub)
+
 
 class AticleItem(scrapy.Item):
     pmid = scrapy.Field()
