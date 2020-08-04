@@ -46,8 +46,7 @@ def read_one(pmid):
     article = database_manager.get_article(pmid)
 
     content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
-    recommendations = evaluator.get_recommendations(content)
-    article["recommendation"] = recommendations
+    article["recommendation"] = evaluator.get_recommendations(content)
     # Create the list of article from our data
     return jsonify(article)
 

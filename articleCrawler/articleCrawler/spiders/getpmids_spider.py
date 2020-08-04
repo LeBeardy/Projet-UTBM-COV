@@ -55,19 +55,26 @@ def get_pmcids( pmids):
     print("-----------------------------------------------------")
 
     pmcids=[]
-    pmids_abstract=[]
     for url in convert_url:
         resp = requests.get(url).json()
-
         for elem in resp["records"]:
             if "pmcid" in elem:
                 pmcids.append(elem["pmcid"])
-            else :
-                pmids_abstract.append( elem["pmid"])
+
 
     print("%i article complet" % len(pmcids) )
 
     return pmcids
+
+def send_request(type, url, ids):
+    print(url)
+    json = {type: ids}
+    req = requests.post(url, json=json)
+    print(req)
+    resp = req.json(cls=ndjson.Decoder)
+    print("%i articles recupere" % len(resp))
+
+    return resp
 
 
 def get_full_articles(  ids, url, database_manager):
@@ -78,11 +85,7 @@ def get_full_articles(  ids, url, database_manager):
     for groupe  in grouper(ids, 1000):
         groupe = list(filter(None,list(groupe)))
         print("groupe de taille : %i" % len(groupe))
-        json = {"pmcids": groupe}
-        req = requests.post(url, json=json)
-        print(req)
-        resp = req.json(cls=ndjson.Decoder)
-        print("%i articles recupere" % len(resp))
+        resp = send_request("pmcids",url, groupe)
 
         pmcids_fetched = []
         for article in resp:
@@ -103,8 +106,6 @@ def get_full_articles(  ids, url, database_manager):
             database_manager.complete_article(pmid, pmcid, content )
 
 
-
-
 def get_abstract_articles(ids, url, database_manager):
     print("-----------------------------------------------------")
     print("Récuperation des articles abstract")
@@ -112,11 +113,8 @@ def get_abstract_articles(ids, url, database_manager):
     for groupe  in grouper(ids, 1000):
         groupe = list(filter(None,list(groupe)))
         print("groupe de taille : %i" % len(groupe))
-        json =  {"pmids": groupe}
-        req = requests.post(url, json=json)
-        print(req)
-        resp = req.json(cls=ndjson.Decoder)
-        print("%i articles recupere" % len(resp))
+
+        resp = send_request("pmids",url, groupe)
 
         for article in resp:
             pmid = article["id"]
