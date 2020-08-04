@@ -44,7 +44,9 @@ def read_one(pmid):
     database_manager = Manager(os.getcwd() + "/data/database/data.db")
     evaluator = Evaluator()
     article = database_manager.get_article(pmid)
-    recommendations = evaluator.get_recommendations(article["content"])
+
+    content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
+    recommendations = evaluator.get_recommendations(content)
     article["recommendation"] = recommendations
     # Create the list of article from our data
     return jsonify(article)
@@ -76,3 +78,18 @@ def _crawler_result(item, response, spider):
     Ideally this should be done using a proper export pipeline.
     """
     output_data.append(dict(item))
+
+def recommendations(pmid):
+    """
+    This function responds to a request for /api/recommendations/{pmid}
+    with the recommendations of article for a specific one
+    :param pmid:   pmid of the article you want to get the recommendations from
+    :return:        list of recommendations
+    """
+    database_manager = Manager(os.getcwd() + "/data/database/data.db")
+    evaluator = Evaluator()
+    article = database_manager.get_article(pmid)
+    content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
+    recommendations = evaluator.get_recommendations(content)
+
+    return jsonify(recommendations)

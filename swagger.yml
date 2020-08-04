@@ -19,17 +19,6 @@ paths:
         - Article
       summary: Read the entire list of article
       description: Read the list of article
-      parameters:
-        - name: length
-          in: query
-          type: integer
-          description: Number of article to get from article
-          required: false
-        - name: offset
-          in: query
-          type: integer
-          description: Offset from beginning of list where to start gathering article
-          required: false
       responses:
         200:
           description: Successfully read article list operation
@@ -38,13 +27,24 @@ paths:
             items:
               properties:
                 pmid:
-                  type: integer
+                  type: string
+                pmcid:
+                  type: string
                 title:
                   type: string
-                text:
+                content_abstract:
+                  type: string
+                content_full:
                   type: string
                 authors:
+                  type: array
+                  items:
+                    type: string
+                date_pub:
                   type: string
+                journal_pub:
+                  type: string
+
   /generate:
     post:
       operationId: article.generate
@@ -55,6 +55,38 @@ paths:
       responses:
         200:
           description: Successfully fetched the articles
+
+  /recommendations/{pmid}:
+    get:
+      operationId: article.recommendations
+      tags:
+        - Article
+      summary: Fetch the recommendations of articles for a specific article
+      description: Fetch the recommendations of articles for a specific article
+      parameters:
+        - name: pmid
+          in: path
+          description: Pmid of the article for the recommendations
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully fetched the recommendations
+          schema:
+            properties:
+                recommendations:
+                  type: object
+                  properties:
+                    top_words:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          place:
+                            type: integer
+                          word:
+                            type: string
+
 
   /article/{pmid}:
     get:
@@ -75,10 +107,18 @@ paths:
           schema:
             properties:
               pmid:
-                type: integer
+                type: string
+              pmcid:
+                type: string
               title:
                 type: string
-              text:
+              content_abstract:
+                type: string
+              content_full:
+                type: string
+              date_pub:
+                type: string
+              journal_pub:
                 type: string
               authors:
                 type: array
