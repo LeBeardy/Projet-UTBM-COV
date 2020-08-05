@@ -107,12 +107,11 @@ def get_abstract_articles(ids, url, database_manager):
         resp = send_request("pmids",url, groupe)
 
         for article in resp:
-            content = article["passages"][1]["text"] if article["passages"][1]["text"] else ""
             infons = article["passages"][0]["infons"]
-            date_pub = infons["journal"].split(";")[1].split(".")[0][:12] if "journal" in infons  else""
-            journal_pub = infons["journal"].split(";")[0] if "journal" in infons  else""
-            database_manager.insert_article(article["id"], "", article["passages"][0]["text"], content, "", dumps(article["authors"]),
-            date_pub, journal_pub)
+            database_manager.insert_article(article["id"], "", article["passages"][0]["text"],
+            article["passages"][1]["text"] if article["passages"][1]["text"] else "", "", dumps(article["authors"]),
+            infons["journal"].split(";")[1].split(".")[0][:12] if "journal" in infons  else"",
+            infons["journal"].split(";")[0] if "journal" in infons  else"")
 
 
 class AticleItem(scrapy.Item):
