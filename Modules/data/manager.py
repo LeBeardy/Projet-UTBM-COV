@@ -1,3 +1,8 @@
+"""
+This is the database manager module and support the differents action to insert
+or get the articles.
+"""
+
 import sqlite3
 from Modules.LDA.Cleaner import Cleaner
 from json import loads
@@ -6,9 +11,7 @@ def format_to_json ( article):
     return {"pmid": article[0], "pmcid": article[1], "title": article[2], "content_abstract": article[3], "content_full": article[4],
     "authors": loads(article[5]), "date_pub": article[6], "journal_pub": article[7]}
 
-
 class Manager:
-
     def __init__(self, db_file):
         self.categories = []
         self.conn = sqlite3.connect(db_file)
@@ -36,8 +39,6 @@ class Manager:
         content = full if full != '' else abstact
         return str(self.cleaner.clean_text(content))
 
-
-
     def get_articles(self):
         articles =[]
         request = self.cursor.execute('SELECT * FROM articleData')
@@ -48,8 +49,6 @@ class Manager:
     def get_article(self, pmid):
         article = self.cursor.execute('SELECT * FROM articleData WHERE pmid=%i' % pmid).fetchone()
         return format_to_json(article)
-
-
 
     def __iter__(self):
         for pmid in self.get_pmids():

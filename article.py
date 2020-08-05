@@ -28,26 +28,22 @@ def read_all():
     :return:        json string of list of article
     """
     database_manager = Manager(os.getcwd() + "/data/database/data.db")
-
-    # Create the list of article from our data
     return jsonify(database_manager.get_articles())
 
 
 def read_one(pmid):
     """
-    This function responds to a request for /api/article/{id}
+    This function responds to a request for /api/article/{pmid}
     with one matching article from article
-    :param id:   id of article to find
-    :return:        article matching last name
+    :param pmid:   pmid of article to find
+    :return:        article matching pmid
     """
-
     database_manager = Manager(os.getcwd() + "/data/database/data.db")
     evaluator = Evaluator()
     article = database_manager.get_article(pmid)
-
+    #find the recommendations for the article, it take the full article, if it got one, else the abstract
     content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
     article["recommendation"] = evaluator.get_recommendations(content)
-    # Create the list of article from our data
     return jsonify(article)
 
 
@@ -64,12 +60,15 @@ def generate():
 
 @crochet.wait_for(timeout=60.0)
 def scrape_with_crochet():
+    """
+    Function who permit to call the crawler to fetch the articles.
+    The crawler is launched in an asynchronous processus.
+    """
     # signal fires when single item is processed
     # and calls _crawler_result to append that item
     dispatcher.connect(_crawler_result, signal=signals.item_scraped)
     eventual = crawl_runner.crawl( ArticlesSpider)
     return eventual  # returns a twisted.internet.defer.Deferred
-
 
 def _crawler_result(item, response, spider):
     """
