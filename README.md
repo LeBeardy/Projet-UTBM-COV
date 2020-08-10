@@ -5,7 +5,7 @@ This project is a LDA-based covid article recommender system for the UTBM (Unive
 This project use sqlite3 to store the data.
 This projet can be divided into 3 differents parts.
 
-##The crawler
+## The crawler
 
 To fetch the differents data about the articles, we use Scrapy to fetch the list of articles.
 
@@ -19,18 +19,18 @@ The [abstact article](https://www.ncbi.nlm.nih.gov/research/pubtator-api/publica
 The [full artcle](https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/biocjson?pmcids=PMC7251362,PMC7392602)
 The [conversion pmid to pmcid](https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=32729463)
 
-##The LDA
+## The LDA
 
 Once we got all the data of the articles, we generate the LDA model.
 First we clean with the Cleaner, then we generate the model with gensim, we save the ressources generated into the data/LDA folder
 The Evaluator class allows to generate the recommendations from an article's content
 
-##The API
+## The API
 
 We can have access to all the previous element through an API.
 You can have acces of all the endpoints here : http://localhost:5000/api/ui/
 
-##The database
+## The database
 
 We stock the article's data into the table articleData.
 
@@ -40,7 +40,7 @@ We stock the article's data into the table articleData.
 | 32729463     | PMC7251362 | title  | content                  | content           | authors  | 01/01/2020       | journal          |
 
 
-##Usage
+## Usage
 
 To launch the API
   ```bash
