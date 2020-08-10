@@ -47,3 +47,7 @@ To launch the API
   python ./api.py
   ```
 Then you can use the differents endpoints find here : http://localhost:5000/api/ui/
+
+## Miscellaneous
+
+If you got errors when you install pycurl: https://stackoverflow.com/questions/37669428/error-in-installation-pycurl-7-19-0
