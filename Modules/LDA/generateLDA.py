@@ -1,3 +1,7 @@
+
+"""
+This is the GenerateLDA module and support the differents action to generate a LDA model from the content of the articles
+"""
 # Import libraries
 import sqlite3
 import pickle
@@ -13,6 +17,9 @@ from Modules.data.manager import Manager
 class GenerateLDA:
 
     def __init__(self):
+        """
+        Init function of the GenerateLDA class
+        """
         project_folder = os.getcwd()
         # Load configuration
         with open(project_folder + '/config.yml') as fp:
@@ -32,6 +39,9 @@ class GenerateLDA:
 
 
     def generateLDA(self):
+        """
+        Function that generate a LDA model from the differents articles in the database
+        """
         # Execution
         manager = Manager(self.DATABASE_PATH)
         dictionary = corpora.Dictionary(manager)

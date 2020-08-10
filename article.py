@@ -61,7 +61,7 @@ def generate():
 @crochet.wait_for(timeout=60.0)
 def scrape_with_crochet():
     """
-    Function who permit to call the crawler to fetch the articles.
+    Deferete function who permit to call the crawler to fetch the articles.
     The crawler is launched in an asynchronous processus.
     """
     # signal fires when single item is processed

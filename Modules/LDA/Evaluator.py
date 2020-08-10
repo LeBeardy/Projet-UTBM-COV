@@ -1,3 +1,7 @@
+
+"""
+This is the Evaluator module and support the differents action to evaluate the content of the articles
+"""
 # Import libraries
 import pickle
 import yaml
@@ -10,6 +14,9 @@ from Modules.data.manager import Manager
 class Evaluator:
 
     def __init__(self):
+        """
+        Init function of the class Evaluator
+        """
         project_folder = os.getcwd()
         # Load configuration
         with open(project_folder + '/config.yml') as fp:
@@ -23,6 +30,11 @@ class Evaluator:
         self.CORPUS_PATH = config['paths']['corpus']
 
     def get_similarity(self, lda, query_vector):
+        """
+        Function that get the similarities between a text and the generate LDA model
+        :param lda:             The LDA model that the similarities are based on
+        :param query_vector:    The text we whant the similarities withe the LDA model
+        """
         with open(self.CORPUS_PATH, 'rb') as fp:
             corpus = pickle.load(fp)
             fp.close()
@@ -32,6 +44,10 @@ class Evaluator:
         return sims
 
     def get_recommendations(self, query):
+        """
+        Function that get the recommentations for an article's content based on a LDA model
+        :param query:       The article's content from where we want the recommendations
+        """
         # Load all respources
         with open(self.DICTIONARY_PATH, 'rb') as fp:
             dictionary = pickle.load(fp)
