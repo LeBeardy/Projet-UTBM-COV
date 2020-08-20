@@ -44,9 +44,11 @@ paths:
                   type: string
                 journal_pub:
                   type: string
+                article_type:
+                  type: string
 
   /generate:
-    post:
+    get:
       operationId: article.generate
       tags:
         - Article
@@ -55,7 +57,30 @@ paths:
       responses:
         200:
           description: Successfully fetched the articles
-
+          schema:
+            type: array
+            items:
+              properties:
+                pmid:
+                  type: string
+                pmcid:
+                  type: string
+                title:
+                  type: string
+                content_abstract:
+                  type: string
+                content_full:
+                  type: string
+                authors:
+                  type: array
+                  items:
+                    type: string
+                date_pub:
+                  type: string
+                journal_pub:
+                  type: string
+                article_type:
+                  type: string
   /recommendations/{pmid}:
     get:
       operationId: article.recommendations
@@ -74,18 +99,10 @@ paths:
           description: Successfully fetched the recommendations
           schema:
             properties:
-                recommendations:
-                  type: object
-                  properties:
-                    top_words:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          place:
-                            type: integer
-                          word:
-                            type: string
+              recommendations:
+                type: array
+                items:
+                  type: string
 
 
   /article/{pmid}:
@@ -124,25 +141,9 @@ paths:
                 type: array
                 items:
                   type: string
-              recommendations:
-                type: object
-                properties:
-                  top_words:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        place:
-                          type: integer
-                        word:
-                          type: string
-                  articles:
-                    type: array
-                    items:
-                      type: integer
 
-  /generateDLA:
-    post:
+  /generateLDA:
+    get:
       operationId: generateLDA.generate
       tags:
         - LDA

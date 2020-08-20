@@ -4,7 +4,7 @@ generateLDA creation
 """
 from flask import make_response, abort
 from Modules.LDA.generateLDA import GenerateLDA
-
+from flask import Flask , render_template, jsonify, request, redirect, url_for
 def generate():
     """
     This function responds to a request for /api/generateLDA
@@ -14,4 +14,4 @@ def generate():
     # Create the list of article from our data
     generator = GenerateLDA()
     generator.generateLDA()
-    return make_response( "LDA model successfully created", 201)
+    return jsonify({"code": 200, "message" : "LDA model successfully created."})

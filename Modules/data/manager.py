@@ -13,7 +13,7 @@ def format_to_json ( article):
     :return:                The formatted article
     """
     return {"pmid": article[0], "pmcid": article[1], "title": article[2], "content_abstract": article[3], "content_full": article[4],
-    "authors": loads(article[5]), "date_pub": article[6], "journal_pub": article[7]}
+    "authors": loads(article[5]), "date_pub": article[6], "journal_pub": article[7], "type": "abstact" if article[4] == '' else "full"}
 
 class Manager:
     def __init__(self, db_file):
@@ -91,6 +91,16 @@ class Manager:
         """
         article = self.cursor.execute('SELECT * FROM articleData WHERE pmid=%i' % pmid).fetchone()
         return format_to_json(article)
+
+    def getInfos(self, pmid):
+        """
+        Get the infos of the article: title, published date and journal, authors
+        :param pmid     pmid of the article
+        :return:        The infos of the article
+        """
+        article = self.cursor.execute('SELECT pmid, title, author, date_pub, journal_pub, content_full=\'\'FROM articleData WHERE pmid=%s' % pmid).fetchone()
+        return { "pmid": article[0], "title": article[1], "authors": loads(article[2]), "date_pub": article[3], "journal_pub": article[4]
+        , "type": "full" if article[5] == 0 else "abstract"}
 
     def __iter__(self):
         """

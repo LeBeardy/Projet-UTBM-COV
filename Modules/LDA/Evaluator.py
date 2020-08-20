@@ -82,4 +82,4 @@ class Evaluator:
                 top -= 1
             idx += 1
 
-        return {"top_words": top_words, "articles": pmids}
+        return pmids

@@ -42,8 +42,9 @@ def read_one(pmid):
     evaluator = Evaluator()
     article = database_manager.get_article(pmid)
     #find the recommendations for the article, it take the full article, if it got one, else the abstract
-    content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
-    article["recommendation"] = evaluator.get_recommendations(content)
+    article["type"] = "full" if article["content_full"] !='' else "abstract"
+
+    #article["recommendation"] = evaluator.get_recommendations(content)
     return jsonify(article)
 
 
@@ -55,8 +56,7 @@ def generate():
     """
     scrape_with_crochet()
     generateLDA.generate()
-    return jsonify(output_data)
-
+    return read_all()
 
 @crochet.wait_for(timeout=60.0)
 def scrape_with_crochet():
@@ -90,4 +90,8 @@ def recommendations(pmid):
     content = article["content_full"] if article["content_full"] !='' else article["content_abstract"]
     recommendations = evaluator.get_recommendations(content)
 
-    return jsonify(recommendations)
+    ret = []
+
+    for pmid in recommendations:
+        ret.append(database_manager.getInfos(pmid))
+    return jsonify(ret)
