@@ -40,7 +40,7 @@ jmespath==0.9.4
 joblib==0.16.0
 jsonschema==3.2.0
 kiwisolver==1.2.0
-lxml==4.5.2
+lxml==4.6.3
 MarkupSafe==1.1.1
 matplotlib==3.3.0
 ndjson==0.3.1
