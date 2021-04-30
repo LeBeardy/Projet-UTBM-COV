@@ -85,7 +85,7 @@ swagger-ui-bundle==0.0.8
 tqdm==4.48.0
 traitlets==4.3.3
 Twisted==20.3.0
-urllib3==1.25.3
+urllib3==1.25.8
 w3lib==1.22.0
 wcwidth==0.2.5
 Werkzeug==1.0.1
